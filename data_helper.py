@@ -32,6 +32,19 @@ def pad_sentences(sentences,padding_word= -1,forced_sequence_length=None):
             padded_sentence = sentence + [padding_word]*num_padding
         padded_sentences.append(sentence)
     return padded_sentences
+
+def pad_data(data,size,pad_index):
+    new_data = []
+    for data_ in data:
+        if len(data_) >= size:
+            data_ = data_[:size]
+        else:
+            while len(data_) < size:
+                data_.append(pad_index)
+                
+        new_data.append(data_)
+    return new_data
+
 def build_dict(vocab_name):
     #pass
     vocab = load_from_file(vocab_name)
@@ -51,6 +64,8 @@ def batch_iter(data,batch_size,num_epochs,shuffle = True):
             end_index = min((batch_num+1)*batch_size,data_size)
             yield shuffled_data[start_index:end_index]
 
+'''
+
 def pad_data(data,seq_length):
     padded_data = []
     for i in range(len(data)):
@@ -61,29 +76,41 @@ def pad_data(data,seq_length):
 
         padded_data.append(dd)
     return padded_data
-                    
+'''                    
 def load_data(filename,vocab_name):
     vocab = Vocabulary(filename)
     with open(filename,"rb") as f:
         lines = f.readlines()
     f.close()
     data = []
+    label = []
     for line in lines:
         line = line.strip()
-
+        nline = line[:-3]
+        label.append(int(line[-1]))
         data1 = []
-        node = mecab.parseToNode(line)
+
+        node = mecab.parseToNode(nline)
         while node:
             word = node.surface
             node = node.next
             data1.append(vocab.stoi(word))
         data.append(data1)
            
-    return data
+    return data,label
         
 if __name__=='__main__':
-    data = load_data("data_use.txt","dict.vocab")
-    data1 = pad_data(data,seq_length=20)
+    data,label = load_data("data_use.txt","data_use.txt")
+    #data1 = pad_data(data,seq_length=20)
+    data1 = pad_data(data,20,-1)            
     
-    print data1[0]
+    '''
+    for dat in data:
+        print dat
+    for dat in data1:
+        print dat
+    '''
+    
     print data[0]
+    print data1[0]
+
