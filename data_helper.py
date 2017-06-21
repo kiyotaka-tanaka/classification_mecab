@@ -55,11 +55,11 @@ def batch_iter(data,batch_size,num_epochs,shuffle = True):
     num_batches_per_epochs = int(data_size/batch_size) + 1
     for epoch in range(num_epochs):
         if shuffle:
-            shuffle_indices = np.random.permutation(np.arrange(data_size))
+            shuffle_indices = np.random.permutation(np.arange(data_size))
             shuffled_data = data[shuffle_indices]
         else:
             shuffled_data = data
-        for batch_num in range(num_batches_per_epoch):
+        for batch_num in range(num_batches_per_epochs):
             start_index = batch_num*batch_size
             end_index = min((batch_num+1)*batch_size,data_size)
             yield shuffled_data[start_index:end_index]
@@ -98,7 +98,15 @@ def load_data(filename,vocab_name):
         data.append(data1)
            
     return data,label
+
+def onehot(label,label_size):
+    arr = np.zeros([len(label),label_size],dtype=np.float32)
+    for number in range(len(label)):
+        arr[number][label[number]-1] = 1.0
+
+    return arr
         
+
 if __name__=='__main__':
     data,label = load_data("data_use.txt","data_use.txt")
     #data1 = pad_data(data,seq_length=20)
